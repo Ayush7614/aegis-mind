@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getPost } from "../data/posts";
 import { openTaintToc, OpenTaintGuide } from "../posts/openTaintGuide";
+import { library } from "../posts/library";
+import { tocFromBlocks } from "../posts/types";
+import ArticleRenderer from "../components/ArticleRenderer";
 import NotFound from "./NotFound";
 
 const registry: Record<
@@ -10,6 +13,13 @@ const registry: Record<
 > = {
   "opentaint-complete-guide": { toc: openTaintToc, Content: OpenTaintGuide },
 };
+
+for (const [slug, article] of Object.entries(library)) {
+  registry[slug] = {
+    toc: tocFromBlocks(article),
+    Content: () => <ArticleRenderer article={article} />,
+  };
+}
 
 export default function BlogPost() {
   const { slug = "" } = useParams();

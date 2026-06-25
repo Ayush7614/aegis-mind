@@ -30,8 +30,18 @@ export default function Blog() {
           <Reveal key={p.slug} delay={i * 90}>
             <Link
               to={`/blog/${p.slug}`}
-              className="panel card-hover group flex h-full flex-col p-7"
+              className="panel card-hover group flex h-full flex-col overflow-hidden p-7"
             >
+              {p.poster && (
+                <div className="-mx-7 -mt-7 mb-5 overflow-hidden border-b border-line/70">
+                  <img
+                    src={`${import.meta.env.BASE_URL}${p.poster}`}
+                    alt={p.title}
+                    loading="lazy"
+                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </div>
+              )}
               <div className="flex flex-wrap items-center gap-2">
                 {p.featured && (
                   <span className="chip px-3 py-1 font-mono text-[11px] text-neon">
