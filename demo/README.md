@@ -7,12 +7,15 @@ e.g. the OpenTaint guide. Built with [VHS](https://github.com/charmbracelet/vhs)
 
 ```
 demo/
-├── bin/opentaint     # colored shim that emulates OpenTaint output for recording
-├── .demorc           # branded demo shell (PATH + green/cyan PS1 prompt)
-├── tapes/            # VHS scripts (.tape) — one per demo
+├── bin/opentaint       # colored shim that emulates OpenTaint output
+├── bin/install-demo.sh # fake installer body (username masked with a red bar)
+├── .demorc             # branded demo shell (green/cyan aegis@vault prompt)
+├── .demorc-install     # install demo shell (masked prompt + curl shim)
+├── tapes/              # VHS scripts (.tape) — one per demo
 │   ├── scan.tape
-│   └── custom-rule.tape
-└── render.sh         # render every tape into website/public/demos/
+│   ├── custom-rule.tape
+│   └── install.tape
+└── render.sh           # render every tape into website/public/demos/
 ```
 
 > The `opentaint` shim is **not** the real tool. It only prints realistic,

@@ -1,0 +1,22 @@
+# Sourced by the install demo tape. Realistic zsh-style prompt with the
+# username/host masked by a red "paint" bar, and a curl() shim that serves the
+# fake installer so `curl ... | bash` works without touching the network.
+__DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PATH="$__DIR/bin:$PATH"
+
+__RED_BG=$'\e[48;2;255;45;85m'
+__GREY=$'\e[38;5;245m'
+__RST=$'\e[0m'
+# (base) [RED BAR] spring-app %    — masks user@host, keeps the conda + zsh look
+export PS1="\[${__GREY}\](base)\[${__RST}\] \[${__RED_BG}\]            \[${__RST}\] spring-app % "
+
+export HISTFILE=/dev/null
+export TERM=xterm-256color
+
+curl() {
+  if [[ "$*" == *opentaint.org/install.sh* ]]; then
+    cat "$__DIR/bin/install-demo.sh"
+  else
+    command curl "$@"
+  fi
+}

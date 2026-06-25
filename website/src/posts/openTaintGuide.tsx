@@ -191,6 +191,16 @@ req.getParameter()  →  service.process(x)  →  statement.execute(sql)
 
       <h3>Install script (Linux / macOS)</h3>
       <CodeBlock code={`curl -fsSL https://opentaint.org/install.sh | bash`} />
+      <p>
+        The installer detects your platform, verifies a checksum, drops the
+        binary in <code>~/.opentaint/install</code>, and prints the{" "}
+        <code>PATH</code> line to add to your shell profile:
+      </p>
+      <TerminalDemo
+        src="demos/opentaint-install.gif"
+        title="(base) ~ spring-app"
+        caption="curl -fsSL https://opentaint.org/install.sh | bash — recorded with VHS"
+      />
 
       <h3>Homebrew (Linux / macOS)</h3>
       <CodeBlock code={`brew install --cask seqra/tap/opentaint`} />
