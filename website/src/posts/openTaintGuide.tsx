@@ -28,12 +28,28 @@ export function OpenTaintGuide() {
       </p>
 
       <Callout type="info" title="TL;DR">
-        OpenTaint is an open-source, formal, inter-procedural <strong>taint
-        analysis</strong> engine — an Apache-2.0 alternative to Semgrep Pro and
-        CodeQL. It tracks untrusted data across function boundaries, persistence
-        layers, aliases, and async code; it lets an LLM agent distill one finding
-        into a deterministic rule; then it replays that rule across your whole
-        codebase forever, at <strong>zero token cost</strong>.
+        <ul>
+          <li>
+            Open-source, formal, <strong>inter-procedural taint analysis</strong>{" "}
+            engine — an Apache-2.0 alternative to Semgrep Pro and CodeQL.
+          </li>
+          <li>
+            Tracks untrusted data across <strong>function boundaries,
+            persistence layers, aliases, and async code</strong>.
+          </li>
+          <li>
+            Lets an <strong>LLM agent distill one finding into a deterministic
+            rule</strong> — you pay the model once, not on every scan.
+          </li>
+          <li>
+            Replays that rule across your whole codebase, on every commit, at{" "}
+            <strong>zero token cost</strong>.
+          </li>
+          <li>
+            Deepest coverage today for <strong>Java / Kotlin / Spring</strong>;
+            Python, Go, C#, JS &amp; TS on the roadmap.
+          </li>
+        </ul>
       </Callout>
 
       {/* 1 */}
