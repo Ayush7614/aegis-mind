@@ -86,10 +86,22 @@ export default function BlogPost() {
             <div className="leading-tight">
               <div className="font-mono text-sm text-white">Ayush Kumar</div>
               <div className="font-mono text-xs text-slate-500">
-                DevRel · AI Security
+                DevRel · Open Source · Community · AI Security
               </div>
             </div>
           </div>
+
+          {post.poster && (
+            <figure className="mt-10">
+              <div className="glow-ring overflow-hidden rounded-2xl border border-line bg-[#060912]">
+                <img
+                  src={`${import.meta.env.BASE_URL}${post.poster}`}
+                  alt={post.title}
+                  className="block w-full"
+                />
+              </div>
+            </figure>
+          )}
         </div>
       </header>
 

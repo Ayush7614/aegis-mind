@@ -200,7 +200,7 @@ req.getParameter()  →  service.process(x)  →  statement.execute(sql)
       <TerminalDemo
         src="demos/opentaint-install.gif"
         title="(base) ~ spring-app"
-        caption="curl -fsSL https://opentaint.org/install.sh | bash — recorded with VHS"
+        caption="curl -fsSL https://opentaint.org/install.sh | bash"
       />
 
       <h3>Homebrew (Linux / macOS)</h3>
@@ -253,7 +253,7 @@ chmod +x mvnw            # the wrapper ships without the exec bit
       <TerminalDemo
         src="demos/opentaint-spring-scaffold.gif"
         title="(base) ~ spring-app"
-        caption="scaffolding & running a Spring Boot app — recorded with VHS"
+        caption="scaffolding & running a Spring Boot app"
       />
       <Callout type="tip" title="A couple of gotchas (shown above)">
         Run <code>./mvnw</code> from <em>inside</em> the project (not the parent
@@ -277,7 +277,7 @@ opentaint --version`}
       <TerminalDemo
         src="demos/opentaint-help.gif"
         title="(base) ~ spring-app"
-        caption="opentaint --help / --version — recorded with VHS"
+        caption="opentaint --help / --version"
       />
 
       {/* 7 */}
@@ -322,7 +322,7 @@ opentaint --version`}
       <TerminalDemo
         src="demos/opentaint-scan.gif"
         title="(base) ~ spring-app"
-        caption="opentaint scan + opentaint summary — recorded with VHS"
+        caption="opentaint scan + opentaint summary"
       />
       <p>
         The scan doesn&apos;t dump findings inline — it writes a SARIF report and
@@ -425,7 +425,7 @@ opentaint scan --rules ./rules .`}
       </p>
       <TerminalDemo
         src="demos/opentaint-custom-rule.gif"
-        caption="opentaint scan --rules ./rules . — recorded with VHS (illustrative)"
+        caption="opentaint scan --rules ./rules . (illustrative)"
       />
       <Callout type="tip" title="This is the cost-saving loop">
         You (or an agent) write this rule <em>once</em>. From then on, every

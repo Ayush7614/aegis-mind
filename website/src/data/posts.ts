@@ -9,6 +9,7 @@ export type Post = {
   category: string;
   accent: "neon" | "cyber" | "violet" | "blood";
   featured?: boolean;
+  poster?: string;
 };
 
 export const posts: Post[] = [
@@ -25,6 +26,7 @@ export const posts: Post[] = [
     category: "AI Security Tools",
     accent: "neon",
     featured: true,
+    poster: "opentaint-poster.png",
   },
 ];
 
