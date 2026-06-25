@@ -8,6 +8,7 @@ export const openTaintToc = [
   { id: "why", label: "Why it matters" },
   { id: "how-it-works", label: "How it works" },
   { id: "install", label: "Installation" },
+  { id: "setup", label: "Set up & verify" },
   { id: "first-scan", label: "Your first scan" },
   { id: "examples", label: "Hands-on examples" },
   { id: "ai-workflows", label: "AI agent workflows" },
@@ -225,7 +226,7 @@ npx @seqra/opentaint scan`}
       </Callout>
 
       {/* 6 */}
-      <h2 id="first-scan">6. Your first scan</h2>
+      <h2 id="setup">6. Set up a test project &amp; verify</h2>
 
       <h3>Scaffold a sample Spring app to test against</h3>
       <p>
@@ -263,11 +264,11 @@ chmod +x mvnw            # the wrapper ships without the exec bit
         needs the app actually running.
       </Callout>
 
-      <h3>Verify OpenTaint &amp; run it</h3>
+      <h3>Verify OpenTaint</h3>
       <p>
-        First, confirm the binary is on your <code>PATH</code> and skim the
-        available commands — OpenTaint is a Cobra-style CLI with subcommands for
-        compiling, pulling artifacts, scanning, and summarizing SARIF:
+        Confirm the binary is on your <code>PATH</code> and skim the available
+        commands — OpenTaint is a Cobra-style CLI with subcommands for compiling,
+        pulling artifacts, scanning, and summarizing SARIF:
       </p>
       <CodeBlock
         code={`opentaint --help
@@ -278,50 +279,68 @@ opentaint --version`}
         title="(base) ~ spring-app"
         caption="opentaint --help / --version — recorded with VHS"
       />
+
+      {/* 7 */}
+      <h2 id="first-scan">7. Your first scan</h2>
       <p>
-        From the root of any supported project (start with a Spring/Java app for
-        the deepest coverage):
+        From inside the project, just run <code>scan</code>. OpenTaint compiles a{" "}
+        <strong>project model</strong>, runs the analyzer, applies the bundled
+        ruleset, writes a SARIF report into <code>~/.opentaint/cache</code>, and
+        prints a clean box-drawing summary:
       </p>
       <CodeBlock code={`opentaint scan`} />
       <p>
-        That auto-detects the project, builds the graph, applies the bundled
-        rules, and prints findings to your terminal. To produce a SARIF report
-        you can open in an IDE or upload to CI:
+        A fresh, hello-world scaffold has nothing dangerous in it, so the first
+        scan reports <strong>0 findings</strong> — exactly what you want to
+        confirm the toolchain end-to-end before you introduce real code:
       </p>
-      <CodeBlock
-        code={`opentaint scan --output results.sarif .`}
-      />
-      <p>A typical first run looks like this:</p>
       <CodeBlock
         lang="text"
-        title="console output"
-        code={`opentaint scan
-▸ detecting project ............. maven (spring-boot 3.x)
-▸ building & resolving deps ...... ok
-▸ constructing call graph ........ 1,842 methods
-▸ applying rules ................. 213 sources / 96 sinks / 41 sanitizers
-▸ solving dataflow ...............
+        title="opentaint scan — actual output"
+        code={`╭─OpenTaint Compile and Scan─╮
+╰─┬──────────────────────────╯
+  ├─ Project        └─ ~/projects/spring-app
+  ├─ Project model  └─ ~/.opentaint/cache/spring-app-cba2bab8/project-model
+  ├─ Autobuilder    └─ custom (~/.opentaint/install/lib/opentaint-project-auto-builder.jar)
+  ├─ Analyzer       └─ custom (~/.opentaint/install/lib/opentaint-project-analyzer.jar)
+  └─ Bundled ruleset└─ custom (~/.opentaint/install/lib/rules)
 
-  HIGH  SQL Injection
-        source  UserController.search(name)        [HTTP param]
-        ↳       UserService.find(name)
-        ↳       UserRepository.rawByName(name)
-        sink    Statement.executeQuery(sql)         UserRepository.java:54
+✓ Compiling project model in 15s
+✓ Analyzing project in 17s
 
-1 high, 0 medium, 0 low · 8.4s`}
+╭─Scan Summary─╮
+╰─┬────────────╯
+  ├─ Findings
+  │  ├─ Total: 0 findings
+  │  ├─ Files affected: 0
+  │  ├─ Rules executed: 78
+  │  └─ Rules triggered: 0
+  └─ Output
+     ├─ Report: …/project-model/sources/opentaint.sarif
+     └─ Log:    ~/.opentaint/logs/spring-app-cba2bab8/…log`}
       />
-      <p>
-        Here is that same run as a live terminal recording — project detection,
-        graph construction, rule application, and the inter-procedural SQL
-        injection it surfaces across three function hops:
-      </p>
       <TerminalDemo
         src="demos/opentaint-scan.gif"
-        caption="opentaint scan — recorded with VHS"
+        title="(base) ~ spring-app"
+        caption="opentaint scan + opentaint summary — recorded with VHS"
       />
+      <p>
+        The scan doesn&apos;t dump findings inline — it writes a SARIF report and
+        points you at the <code>summary</code> subcommand. Pass{" "}
+        <code>--show-findings</code> to print each finding (here, none yet):
+      </p>
+      <CodeBlock
+        code={`opentaint summary ~/.opentaint/cache/spring-app-cba2bab8/project-model/sources/opentaint.sarif --show-findings`}
+      />
+      <Callout type="info" title="0 findings is the right answer here">
+        The scaffold is a bare Spring Boot app, so there is genuinely nothing to
+        find. In the next section we add a deliberately vulnerable endpoint and a
+        custom rule so you can watch OpenTaint light up — and the same{" "}
+        <code>scan → summary</code> loop is all you need.
+      </Callout>
 
-      {/* 7 */}
-      <h2 id="examples">7. Hands-on examples</h2>
+      {/* 8 */}
+      <h2 id="examples">8. Hands-on examples</h2>
       <p>
         Four progressively richer examples, from a vulnerable Spring endpoint to
         a custom rule and CI output.
@@ -399,13 +418,14 @@ public class UserRepository {
 opentaint scan --rules ./rules .`}
       />
       <p>
-        With the custom rule loaded, the same engine now reports a second,
-        org-specific finding alongside the built-in SQL injection — and can emit
-        a SARIF report in the same pass:
+        With the custom rule loaded and a deliberately vulnerable endpoint in the
+        project, the same engine now reports findings — the built-in SQL
+        injection plus your org-specific PII rule (this view is illustrative of
+        what a non-zero result looks like):
       </p>
       <TerminalDemo
         src="demos/opentaint-custom-rule.gif"
-        caption="opentaint scan --rules ./rules --output results.sarif . — recorded with VHS"
+        caption="opentaint scan --rules ./rules . — recorded with VHS (illustrative)"
       />
       <Callout type="tip" title="This is the cost-saving loop">
         You (or an agent) write this rule <em>once</em>. From then on, every
@@ -415,16 +435,19 @@ opentaint scan --rules ./rules .`}
 
       <h3>Example 3 — SARIF output + opening results</h3>
       <p>
-        Produce machine-readable output and feed it anywhere that speaks SARIF:
+        Every scan emits SARIF (the report path is printed under{" "}
+        <code>Output → Report</code>). Because it&apos;s standard SARIF, you can
+        feed it anywhere — <code>jq</code>, an IDE, or CI:
       </p>
       <CodeBlock
-        code={`opentaint scan --output results.sarif .
+        code={`opentaint scan
+report=~/.opentaint/cache/spring-app-cba2bab8/project-model/sources/opentaint.sarif
 
 # count findings by severity with jq
-jq '[.runs[].results[].level] | group_by(.) | map({(.[0]): length}) | add' results.sarif`}
+jq '[.runs[].results[].level] | group_by(.) | map({(.[0]): length}) | add' "$report"`}
       />
       <p>
-        Open <code>results.sarif</code> in VS Code (with the SARIF Viewer
+        Open that <code>.sarif</code> in VS Code (with the SARIF Viewer
         extension) or upload it to GitHub code scanning to get inline annotations
         on the exact source and sink lines.
       </p>
@@ -436,9 +459,8 @@ jq '[.runs[].results[].level] | group_by(.) | map({(.[0]): length}) | add' resul
       <CodeBlock
         code={`docker run --rm \\
   -v $(pwd):/project \\
-  -v $(pwd):/output \\
   ghcr.io/seqra/opentaint:latest \\
-  opentaint scan --output /output/results.sarif /project`}
+  opentaint scan /project`}
       />
       <p>
         This is the most reproducible option — identical engine version every
@@ -446,8 +468,8 @@ jq '[.runs[].results[].level] | group_by(.) | map({(.[0]): length}) | add' resul
         across a team.
       </p>
 
-      {/* 8 */}
-      <h2 id="ai-workflows">8. AI agent workflows</h2>
+      {/* 9 */}
+      <h2 id="ai-workflows">9. AI agent workflows</h2>
       <p>
         OpenTaint ships <strong>agent skills</strong> that turn static analysis
         into an end-to-end AppSec workflow. Install them with:
@@ -511,8 +533,8 @@ jq '[.runs[].results[].level] | group_by(.) | map({(.[0]): length}) | add' resul
         economic argument for OpenTaint.
       </Callout>
 
-      {/* 9 */}
-      <h2 id="ci">9. CI/CD integration</h2>
+      {/* 10 */}
+      <h2 id="ci">10. CI/CD integration</h2>
       <p>
         Because OpenTaint emits SARIF and ships a GitHub Action + GitLab template,
         wiring it into a pipeline is short. A minimal GitHub Actions job:
@@ -531,7 +553,8 @@ jobs:
       - name: Run OpenTaint
         run: |
           curl -fsSL https://opentaint.org/install.sh | bash
-          opentaint scan --output results.sarif .
+          opentaint scan
+          cp "$(find ~/.opentaint/cache -name opentaint.sarif | head -1)" results.sarif
       - name: Upload SARIF to code scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -543,8 +566,8 @@ jobs:
         For the official, supported configuration always check the docs.
       </p>
 
-      {/* 10 */}
-      <h2 id="tips">10. Pro tips &amp; gotchas</h2>
+      {/* 11 */}
+      <h2 id="tips">11. Pro tips &amp; gotchas</h2>
       <ul>
         <li>
           <strong>Start with Java/Spring.</strong> It has the deepest coverage
@@ -581,8 +604,8 @@ jobs:
         or client data into rules or issues.
       </Callout>
 
-      {/* 11 */}
-      <h2 id="wrap">11. Wrap-up</h2>
+      {/* 12 */}
+      <h2 id="wrap">12. Wrap-up</h2>
       <p>
         OpenTaint reframes the AI-vs-static-analysis debate: instead of paying a
         language model to re-read your code on every scan, you pay it once to
@@ -600,15 +623,15 @@ curl -fsSL https://opentaint.org/install.sh | bash
 brew install --cask seqra/tap/opentaint
 npm install -g @seqra/opentaint
 
-# scan
-opentaint scan                                  # console
-opentaint scan --output results.sarif .         # SARIF report
+# scan + view findings
+opentaint scan                                  # compile + analyze, writes SARIF to ~/.opentaint/cache
+opentaint summary <report.sarif> --show-findings
 opentaint scan --rules ./rules .                # with custom rules
 
 # docker (zero install)
-docker run --rm -v $(pwd):/project -v $(pwd):/output \\
+docker run --rm -v $(pwd):/project \\
   ghcr.io/seqra/opentaint:latest \\
-  opentaint scan --output /output/results.sarif /project
+  opentaint scan /project
 
 # AI agent skills
 npx skills add https://github.com/seqra/opentaint`}
