@@ -21,8 +21,8 @@ shift || true
 args="$*"
 
 case "$sub" in
-  --version|version)
-    printf "%sopentaint%s 1.4.0  %s(demo shim)%s\n" "$BOLD$GREEN" "$RESET" "$DIM" "$RESET"
+  --version|-v|version)
+    printf "opentaint version %s0.4.2%s\n" "$GREEN" "$RESET"
     ;;
 
   scan)
@@ -63,11 +63,37 @@ case "$sub" in
     fi
     ;;
 
-  help|*)
-    printf "%sopentaint%s — formal inter-procedural taint analysis %s(demo)%s\n\n" "$BOLD$GREEN" "$RESET" "$DIM" "$RESET"
-    printf "  %sUsage:%s opentaint scan [--rules DIR] [--output FILE] [PATH]\n\n" "$BOLD" "$RESET"
-    printf "  %sscan%s        analyze a project for source→sink taint flows\n" "$CYAN" "$RESET"
-    printf "  %s--rules%s     add a directory of custom taint rules\n" "$CYAN" "$RESET"
-    printf "  %s--output%s    write findings as a SARIF report\n" "$CYAN" "$RESET"
+  --help|-h|help|"")
+    H="$BOLD$WHITE"; C="$CYAN"
+    printf "OpenTaint is a CLI tool that analyzes Java and Kotlin projects to find vulnerabilities\n\n"
+    printf "%sUsage:%s\n" "$H" "$RESET"
+    printf "  opentaint [flags]\n"
+    printf "  opentaint [command]\n\n"
+    printf "%sAvailable Commands:%s\n" "$H" "$RESET"
+    printf "  %scompile%s     Compile your Java or Kotlin project\n" "$C" "$RESET"
+    printf "  %scompletion%s  Generate the autocompletion script for the specified shell\n" "$C" "$RESET"
+    printf "  %shealth%s      Show resolved dependency paths\n" "$C" "$RESET"
+    printf "  %shelp%s        Help about any command\n" "$C" "$RESET"
+    printf "  %sproject%s     Create a project model directory containing a project.yaml configuration from precompiled JARs or classes\n" "$C" "$RESET"
+    printf "  %sprune%s       Remove stale downloaded artifacts from ~/.opentaint\n" "$C" "$RESET"
+    printf "  %spull%s        Download autobuilder, analyzer binaries, rules and Java runtime\n" "$C" "$RESET"
+    printf "  %sscan%s        Scan your Java or Kotlin project\n" "$C" "$RESET"
+    printf "  %ssummary%s     Print summary of your sarif\n" "$C" "$RESET"
+    printf "  %stest%s        Create and run rule and approximation tests\n" "$C" "$RESET"
+    printf "  %supdate%s      Update opentaint to the latest version\n\n" "$C" "$RESET"
+    printf "%sFlags:%s\n" "$H" "$RESET"
+    printf "      %s--color string%s       Color mode (auto, always, never) (default \"auto\")\n" "$C" "$RESET"
+    printf "      %s--config string%s      Path to a config file\n" "$C" "$RESET"
+    printf "  %s-d, --debug%s              Enable debug output (stream JAR subprocess output, show debug-only fields)\n" "$C" "$RESET"
+    printf "  %s-h, --help%s               help for opentaint\n" "$C" "$RESET"
+    printf "      %s--java-version int%s   Java version to use for running analyzer (default 21)\n" "$C" "$RESET"
+    printf "  %s-q, --quiet%s              Suppress interactive UI elements (spinners, progress bars) and JAR streaming\n" "$C" "$RESET"
+    printf "      %s--skip-verify%s        Skip SHA256 checksum verification of downloaded artifacts\n" "$C" "$RESET"
+    printf "  %s-v, --version%s            Print the version information\n\n" "$C" "$RESET"
+    printf "Use \"opentaint [command] --help\" for more information about a command.\n"
+    ;;
+  *)
+    printf "Error: unknown command \"%s\" for \"opentaint\"\n" "$sub"
+    printf "Run 'opentaint --help' for usage.\n"
     ;;
 esac

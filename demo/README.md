@@ -14,7 +14,8 @@ demo/
 ├── tapes/              # VHS scripts (.tape) — one per demo
 │   ├── scan.tape
 │   ├── custom-rule.tape
-│   └── install.tape
+│   ├── install.tape
+│   └── help.tape
 └── render.sh           # render every tape into website/public/demos/
 ```
 

@@ -227,6 +227,20 @@ npx @seqra/opentaint scan`}
       {/* 6 */}
       <h2 id="first-scan">6. Your first scan</h2>
       <p>
+        First, confirm the binary is on your <code>PATH</code> and skim the
+        available commands — OpenTaint is a Cobra-style CLI with subcommands for
+        compiling, pulling artifacts, scanning, and summarizing SARIF:
+      </p>
+      <CodeBlock
+        code={`opentaint --help
+opentaint --version`}
+      />
+      <TerminalDemo
+        src="demos/opentaint-help.gif"
+        title="(base) ~ spring-app"
+        caption="opentaint --help / --version — recorded with VHS"
+      />
+      <p>
         From the root of any supported project (start with a Spring/Java app for
         the deepest coverage):
       </p>
