@@ -1,0 +1,11 @@
+# Sourced by VHS tapes to set up a clean, branded demo shell.
+__DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PATH="$__DIR/bin:$PATH"
+
+# AegisMind prompt: green user, cyan path
+export PS1='\[\e[1;38;5;48m\]aegis@vault\[\e[0m\]:\[\e[1;38;5;45m\]~/spring-app\[\e[0m\]$ '
+
+# quieter, deterministic shell
+export HISTFILE=/dev/null
+export TERM=xterm-256color
+alias ls='ls --color=auto 2>/dev/null || ls'

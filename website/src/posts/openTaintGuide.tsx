@@ -1,5 +1,6 @@
 import CodeBlock from "../components/CodeBlock";
 import Callout from "../components/Callout";
+import TerminalDemo from "../components/TerminalDemo";
 
 export const openTaintToc = [
   { id: "what-is", label: "What is OpenTaint?" },
@@ -247,6 +248,15 @@ npx @seqra/opentaint scan`}
 
 1 high, 0 medium, 0 low · 8.4s`}
       />
+      <p>
+        Here is that same run as a live terminal recording — project detection,
+        graph construction, rule application, and the inter-procedural SQL
+        injection it surfaces across three function hops:
+      </p>
+      <TerminalDemo
+        src="demos/opentaint-scan.gif"
+        caption="opentaint scan — recorded with VHS"
+      />
 
       {/* 7 */}
       <h2 id="examples">7. Hands-on examples</h2>
@@ -325,6 +335,15 @@ public class UserRepository {
       <CodeBlock
         code={`# run a scan with your custom rules directory added
 opentaint scan --rules ./rules .`}
+      />
+      <p>
+        With the custom rule loaded, the same engine now reports a second,
+        org-specific finding alongside the built-in SQL injection — and can emit
+        a SARIF report in the same pass:
+      </p>
+      <TerminalDemo
+        src="demos/opentaint-custom-rule.gif"
+        caption="opentaint scan --rules ./rules --output results.sarif . — recorded with VHS"
       />
       <Callout type="tip" title="This is the cost-saving loop">
         You (or an agent) write this rule <em>once</em>. From then on, every

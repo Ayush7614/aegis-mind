@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Demo shim that emulates OpenTaint output for recording terminal GIFs/screenshots.
+# NOT the real tool — it only prints realistic, colored output so the AegisMind
+# blog can show authentic-looking demos without a full Java/OpenTaint setup.
+
+set -u
+
+# ---- palette ----
+RESET=$'\e[0m'; BOLD=$'\e[1m'; DIM=$'\e[2m'
+CYAN=$'\e[38;5;45m'; GREEN=$'\e[38;5;48m'; RED=$'\e[38;5;203m'
+YELLOW=$'\e[38;5;221m'; GREY=$'\e[38;5;245m'; VIOLET=$'\e[38;5;141m'
+WHITE=$'\e[38;5;255m'
+
+step() { printf "%s▸%s %s%-34s%s " "$CYAN" "$RESET" "$WHITE" "$1" "$RESET"; }
+ok()   { printf "%s%s ✓%s\n" "$GREEN" "$1" "$RESET"; }
+
+pause() { sleep "${1:-0.45}"; }
+
+sub="${1:-help}"
+shift || true
+args="$*"
+
+case "$sub" in
+  --version|version)
+    printf "%sopentaint%s 1.4.0  %s(demo shim)%s\n" "$BOLD$GREEN" "$RESET" "$DIM" "$RESET"
+    ;;
+
+  scan)
+    pause 0.3
+    step "detecting project ............."; pause; ok "maven (spring-boot 3.x)"
+    step "building & resolving deps ......"; pause 0.7; ok "ok"
+    step "constructing call graph ........"; pause 0.6; ok "1,842 methods"
+    step "applying rules ................."; pause 0.5
+    if [[ "$args" == *"--rules"* ]]; then
+      ok "216 sources / 98 sinks / 42 sanitizers"
+    else
+      ok "213 sources / 96 sinks / 41 sanitizers"
+    fi
+    step "solving dataflow ..............."; pause 0.9; printf "\n\n"
+
+    # finding 1 — SQL injection
+    printf "  %s%s HIGH %s %sSQL Injection%s\n" "$BOLD" "$RED" "$RESET" "$BOLD$WHITE" "$RESET"
+    printf "        %ssource%s  UserController.search(name)        %s[HTTP param]%s\n" "$GREY" "$RESET" "$DIM" "$RESET"
+    printf "        %s↳%s       UserService.find(name)\n" "$DIM" "$RESET"
+    printf "        %s↳%s       UserRepository.rawByName(name)\n" "$DIM" "$RESET"
+    printf "        %ssink%s    Statement.executeQuery(sql)        %sUserRepository.java:54%s\n" "$GREY" "$RESET" "$CYAN" "$RESET"
+    pause 0.6
+
+    if [[ "$args" == *"--rules"* ]]; then
+      printf "\n"
+      printf "  %s%s HIGH %s %sPII into AuditLog%s  %s(rule: pii-into-auditlog)%s\n" "$BOLD" "$RED" "$RESET" "$BOLD$WHITE" "$RESET" "$VIOLET" "$RESET"
+      printf "        %ssource%s  Http.body()                        %s[request body]%s\n" "$GREY" "$RESET" "$DIM" "$RESET"
+      printf "        %ssink%s    AuditLog.write(msg)                %sOrderService.java:88%s\n" "$GREY" "$RESET" "$CYAN" "$RESET"
+      pause 0.5
+      printf "\n%s2 high%s, 0 medium, 0 low %s· 9.1s%s\n" "$BOLD$RED" "$RESET" "$DIM" "$RESET"
+    else
+      printf "\n%s1 high%s, 0 medium, 0 low %s· 8.4s%s\n" "$BOLD$RED" "$RESET" "$DIM" "$RESET"
+    fi
+
+    if [[ "$args" == *"--output"* ]]; then
+      out="${args##*--output }"; out="${out%% *}"
+      printf "%s↳ wrote SARIF report → %s%s%s\n" "$GREEN" "$BOLD" "$out" "$RESET"
+    fi
+    ;;
+
+  help|*)
+    printf "%sopentaint%s — formal inter-procedural taint analysis %s(demo)%s\n\n" "$BOLD$GREEN" "$RESET" "$DIM" "$RESET"
+    printf "  %sUsage:%s opentaint scan [--rules DIR] [--output FILE] [PATH]\n\n" "$BOLD" "$RESET"
+    printf "  %sscan%s        analyze a project for source→sink taint flows\n" "$CYAN" "$RESET"
+    printf "  %s--rules%s     add a directory of custom taint rules\n" "$CYAN" "$RESET"
+    printf "  %s--output%s    write findings as a SARIF report\n" "$CYAN" "$RESET"
+    ;;
+esac
