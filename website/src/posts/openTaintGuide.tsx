@@ -226,6 +226,44 @@ npx @seqra/opentaint scan`}
 
       {/* 6 */}
       <h2 id="first-scan">6. Your first scan</h2>
+
+      <h3>Scaffold a sample Spring app to test against</h3>
+      <p>
+        No project handy? Spin up a throwaway Spring Boot app straight from{" "}
+        <a href="https://start.spring.io" target="_blank" rel="noreferrer">
+          start.spring.io
+        </a>
+        , unzip it, and boot it once to confirm your toolchain (Java 21 + the
+        Maven wrapper). This gives OpenTaint something real to chew on:
+      </p>
+      <CodeBlock
+        lang="bash"
+        code={`curl https://start.spring.io/starter.zip \\
+  -d type=maven-project -d language=java -d bootVersion=3.5.4 \\
+  -d baseDir=spring-app -d groupId=com.example -d artifactId=spring-app \\
+  -d name=spring-app -d packageName=com.example.springapp \\
+  -d javaVersion=21 -d dependencies=web -o spring-app.zip
+
+unzip spring-app.zip && rm spring-app.zip
+cd spring-app
+chmod +x mvnw            # the wrapper ships without the exec bit
+./mvnw spring-boot:run   # downloads Maven + Boot, then starts Tomcat on :8080`}
+      />
+      <TerminalDemo
+        src="demos/opentaint-spring-scaffold.gif"
+        title="(base) ~ spring-app"
+        caption="scaffolding & running a Spring Boot app — recorded with VHS"
+      />
+      <Callout type="tip" title="A couple of gotchas (shown above)">
+        Run <code>./mvnw</code> from <em>inside</em> the project (not the parent
+        folder), and the wrapper needs <code>chmod +x mvnw</code> first. You only
+        need <code>java</code> installed — the wrapper fetches Maven for you, so
+        a missing <code>mvn</code> is fine. Stop the app with{" "}
+        <code>Ctrl-C</code>; OpenTaint analyzes <em>source</em>, so it never
+        needs the app actually running.
+      </Callout>
+
+      <h3>Verify OpenTaint &amp; run it</h3>
       <p>
         First, confirm the binary is on your <code>PATH</code> and skim the
         available commands — OpenTaint is a Cobra-style CLI with subcommands for

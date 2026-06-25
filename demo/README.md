@@ -15,7 +15,9 @@ demo/
 │   ├── scan.tape
 │   ├── custom-rule.tape
 │   ├── install.tape
-│   └── help.tape
+│   ├── help.tape
+│   └── spring-scaffold.tape
+├── bin/scaffold-demo.sh # replays a Spring Boot scaffold+run session
 └── render.sh           # render every tape into website/public/demos/
 ```
 
@@ -26,8 +28,12 @@ demo/
 ## Requirements
 
 ```bash
-brew install vhs ttyd ffmpeg
+brew install vhs ttyd ffmpeg gifsicle
 ```
+
+> `gifsicle` is optional but recommended — long demos can be large, so compress
+> them after rendering, e.g.
+> `gifsicle -O3 --lossy=80 --colors 80 in.gif -o in.gif`.
 
 ## Regenerate all demos
 
